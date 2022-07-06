@@ -11,7 +11,7 @@ Sie können in ihrer Lösung beliebige Hilfstypen und Module selbst definieren, 
 
 Zur Lösung der Aufgaben steht für Sie dieses Repository mit
 - einer Testdatei [demorgan](src/parser/demorgan.c1),
-- einem Lexer in [lexer](src/parser/lexer.rs)
+- einem Lexer in [minako-lexic](src/parser/lexer.rs)
 - einem Parser-Template in [minako-syntax](src/parser/minako_syntax.y)
 
 zur Verfügung.
@@ -19,7 +19,8 @@ zur Verfügung.
 ## Aufgabenstellung (100 Punkte)
 Der von uns verwendete Parsergenerator *bison* sollte Ihnen bereits aus der Übung bekannt sein. Da Materialien zu Bison (Handbücher, Tutorials, …) sehr zahlreich im Netz vorhanden sind, wird hier auf eine weitere Erklärung verzichtet.
 
-Für Rust bietet die [rust-bison-skeleton](https://crates.io/crates/rust-bison-skeleton) crate ein Bison frontend an, welches Parser in Rust generiert. Nähere Informationen finden Sie in der README der crate, und in der Vorbesprechung des Übungsblatts. 
+Für Rust bietet die [rust-bison-skeleton](https://crates.io/crates/rust-bison-skeleton) crate ein Bison frontend an, welches Parser in Rust generiert. Nähere Informationen finden Sie in der README der crate, und in der Vorbesprechung des Übungsblatts.
+Bitte beachten Sie, dass die crate lediglich ein anderes Frontend für bison bereitstellt. Bison selbst muss auf ihrem Rechner installiert sein, um die crate nutzen zu können. Hierfür wird sehr wahrscheinlich Linux benötigt.
 
 Ihre Aufgabe besteht darin, einen Parser für die Sprache C1 zu erstellen. Dazu bekommen Sie von uns einen Lexer. (Sie können theoretisch auch Ihren Scanner vom Aufgabenblatt 2 benutzen – aber dessen Integration in den Parser erfordert etwas Aufwand)
 
@@ -77,18 +78,18 @@ type                ::= <KW_BOOLEAN>
 id                  ::= <ID>
 ```
 
-Da Bison leider keine EBNF, sondern nur BNF versteht, werden Sie die Grammatik zwangsläufig umbauen müssen. 
+Da Bison leider keine EBNF, sondern nur BNF versteht, werden Sie die Grammatik zwangsläufig umbauen müssen.
 Dabei ist im Prinzip fast alles erlaubt, nur die Sprache darf sich natürlich nicht verändern!
 
 ### Folgende Anforderungen werden an Ihre Lösung gestellt:
 
-- die Implementation erfolgt in der Datei minako-syntax.y 
+- die Implementation erfolgt in der Datei minako-syntax.y
 - der Parser gibt im erfolgreichen Fall nichts aus
-- bei einem Parserfehler wird eine Fehlermeldung ausgegeben und das Programm mit der Rückgabe des Fehlers beendet 
-- wenn Sie den Parser mithilfe der Tests auf das mitgelieferte C1-Programm demorgan.c1 ansetzen, sollte er entsprechend nichts ausgeben und alle Tests erfolgreich durchlaufen 
+- bei einem Parserfehler wird eine Fehlermeldung ausgegeben und das Programm mit der Rückgabe des Fehlers beendet
+- wenn Sie den Parser mithilfe der Tests auf das mitgelieferte C1-Programm demorgan.c1 ansetzen, sollte er entsprechend nichts ausgeben und alle Tests erfolgreich durchlaufen
 - die Verwendung von %expect x für x > 0 im Bison-Code ist nicht gestattet
 
 ### Zur Hilfestellung seien noch folgende Hinweise gegeben:
-- Gehen Sie am Anfang alle EBNF-Konstrukte durch und überlegen Sie sich, wie man diese jeweils generisch in BNF umwandeln kann. 
-- In dieser Grammatik ist eine Mehrdeutigkeit enthalten, die einem spätestens bei der Implementierung auffällt. 
+- Gehen Sie am Anfang alle EBNF-Konstrukte durch und überlegen Sie sich, wie man diese jeweils generisch in BNF umwandeln kann.
+- In dieser Grammatik ist eine Mehrdeutigkeit enthalten, die einem spätestens bei der Implementierung auffällt.
 - Rufen Sie sich die Bedeutung von %left, %right und %nonassoc in Erinnerung, bevor Sie die Grammatik unnötig verkomplizieren.
