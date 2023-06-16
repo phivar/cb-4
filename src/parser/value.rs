@@ -13,6 +13,17 @@ pub enum Value {
     Uninitialized,
     /// Required variant, parser expects it to be defined
     Stolen,
+    //debugging
+    FuncDef,
+    OptParamList,
+    StmtList,
+    StatBlock,
+    Block,
+    FuncCall,
+    DeclAssign,
+    Stmt,
+    Type,
+    Id,
 
     /// Required variant, parser expects it to be defined.
     /// Represents a token that is returned from a Lexer

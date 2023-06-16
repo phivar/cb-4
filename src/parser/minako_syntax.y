@@ -44,6 +44,7 @@
     CONST_STRING  "string literal"
     ID            "identifier"
 
+
 // definition of association and precedence of operators
 %left '+' '-' OR
 %left '*' '/' AND
@@ -56,12 +57,124 @@
 
 %%
 
-program:
-	// empty
-	{
-            $$ = Value::None;
-        }
+program: %empty {$$ = Value::None;}
+	| program functiondefinition {$$ = Value::None;} 
+    | program declassignment_mod {$$ = Value::None;}
+    ;
 
+functiondefinition : 
+    type ID '(' opt_parameterlist ')' '{' statementlist '}'
+    {$$ = Value::FuncDef;}
+    ;
+
+opt_parameterlist : %empty {$$ = Value::OptParamList;}
+    | parameterlist {$$ = Value::OptParamList;}
+    ;
+parameterlist : type id {$$ = Value::None;}
+    | parameterlist ',' type id {$$ = Value::None;}
+    ; 
+
+functioncall : id '(' opt_assignmentlist ')' {$$ = Value::FuncCall;}
+    ;
+opt_assignmentlist : %empty {$$ = Value::None;}
+    | assignmentlist {$$ = Value::None;}
+    ;
+assignmentlist : assignment {$$ = Value::None;}
+    | assignmentlist ',' assignment {$$ = Value::None;}
+    ;
+statementlist : %empty {$$ = Value::StmtList;}
+    | statementlist block {$$ = Value::StmtList;}
+    ;
+
+block : '{' statementlist '}' {$$ = Value::Block;}
+    | statement {$$ = Value::Block;}
+    ;
+
+statement : ifstatement {$$ = Value::Stmt;}
+    | forstatement {$$ = Value::Stmt;}
+    | whilestatement {$$ = Value::Stmt;}
+    | returnstatement ';' {$$ = Value::Stmt;}
+    | dowhilestatement ';' {$$ = Value::Stmt;}
+    | printf ';' {$$ = Value::Stmt;}
+    | declassignment ';' {$$ = Value::Stmt;}
+    | statassignment ';' {$$ = Value::Stmt;}
+    | functioncall ';' {$$ = Value::Stmt;}
+    ;
+statblock :'{' statementlist '}' {$$ = Value::StatBlock;}
+    | statement {$$ = Value::StatBlock;}
+    ;
+
+ifstatement : 
+    KW_IF '(' assignment ')' statblock %prec LOWER_THAN_ELSE 
+    {$$ = Value::None;} 
+    | KW_IF '(' assignment ')' statblock KW_ELSE statblock %prec KW_ELSE
+    {$$ = Value::None;}
+    ;
+forstatement : 
+    KW_FOR '(' stat_decl_assign ';' expr ';' statassignment ')' statblock {$$ = Value::None;}
+    ;
+stat_decl_assign : statassignment {$$ = Value::None;}
+    | declassignment {$$ = Value::None;}
+    ;
+dowhilestatement : KW_DO statblock KW_WHILE '(' assignment ')' {$$ = Value::None;} 
+    ;
+whilestatement : KW_WHILE '(' assignment ')' statblock {$$ = Value::None;}
+    ;
+returnstatement : KW_RETURN {$$ = Value::None;}
+    | KW_RETURN assignment {$$ = Value::None;}
+    ;
+printf : KW_PRINTF '(' const_str_assign ')' {$$ = Value::None;}
+    ;
+const_str_assign : assignment {$$ = Value::None;}
+    | CONST_STRING {$$ = Value::None;}
+    ;
+declassignment_mod : type id ';' {$$ = Value::DeclAssign;}
+    | type id '=' assignment ';' {$$ = Value::DeclAssign;}
+    ;
+declassignment : type id {$$ = Value::DeclAssign;}
+    | type id '=' assignment {$$ = Value::DeclAssign;}
+    ;
+statassignment : id '=' assignment {$$ = Value::None;}
+    ;
+assignment : id '=' assignment {$$ = Value::None;}
+    | expr {$$ = Value::None;}
+    ;
+expr : simpexpr {$$ = Value::None;}
+    | cmp_expr {$$ = Value::None;}
+    ;
+cmp_expr : simpexpr EQ simpexpr {$$ = Value::None;}
+    | simpexpr NEQ simpexpr {$$ = Value::None;}
+    | simpexpr LEQ simpexpr {$$ = Value::None;}
+    | simpexpr GEQ simpexpr {$$ = Value::None;}
+    | simpexpr GRT simpexpr {$$ = Value::None;}
+    | simpexpr LSS simpexpr {$$ = Value::None;}
+    ;
+simpexpr : term {$$ = Value::None;}
+    |'-' term %prec UMINUS {$$ = Value::None;}
+    | simpexpr '+' term {$$ = Value::None;}
+    | simpexpr '-' term {$$ = Value::None;}
+    | simpexpr OR term {$$ = Value::None;}
+    ;
+term : factor {$$ = Value::None;}
+    | term '*' factor {$$ = Value::None;}
+    | term '/' factor {$$ = Value::None;}
+    | term AND factor {$$ = Value::None;}
+    ;
+factor : CONST_INT {$$ = Value::None;}
+    | CONST_FLOAT {$$ = Value::None;}
+    | CONST_BOOLEAN {$$ = Value::None;}
+    | functioncall {$$ = Value::None;}
+    | id {$$ = Value::None;}
+    | '(' assignment ')' {$$ = Value::None;}
+    ;
+
+type : KW_BOOLEAN {$$ = Value::Type;}
+    | KW_FLOAT {$$ = Value::Type;}
+    | KW_INT {$$ = Value::Type;}
+    | KW_VOID {$$ = Value::Type;}
+    ;
+id : ID {$$ = Value::Id;}
+    ;
 
 %%
 
